@@ -1,0 +1,32 @@
+﻿<Window x:Class="AlignmentTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:Alignment.WPF.Controls;assembly=Alignment.WPF"
+        xmlns:local="clr-namespace:AlignmentTest"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1000">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid Margin="0,0,-302.4,-203">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+                <controls:AlignmentPanel x:Name="AlignmentPanelControl" Grid.Column="0" Margin="0,4,0,20"/>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <controls:AlignmentTestPanel Grid.Row="0" />
+            <Button Grid.Row="2" Content="Run Calibrate Test" Click="BtnRunCalibrateTest_Click" Width="150" Height="40" />
+        </Grid>
+        
+    </Grid>
+        </Grid>
+    </ScrollViewer>
+</Window>

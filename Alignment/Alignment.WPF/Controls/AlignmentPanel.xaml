@@ -1,0 +1,283 @@
+﻿<UserControl x:Class="Alignment.WPF.Controls.AlignmentPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Alignment.WPF.ViewModels" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:utils="clr-namespace:Alignment.WPF.Utils">
+    <UserControl.Resources>
+        <utils:AxisDirToGlyphConverter x:Key="AxisGlyph" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+        <Grid Margin="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="0">
+                <TextBlock Text="Connection" FontWeight="Bold"/>
+                <TextBox Width="160" Text="{Binding Connection, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Margin="0,8,0,0" Text="Camera" FontWeight="Bold"/>
+                <TextBox Width="160" Text="{Binding Camera, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Separator Margin="0,8,0,8"/>
+                <TextBlock Text="校正移動量 (CalibMove)" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Text="X:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.CalibMove.X, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Y:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.CalibMove.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="U:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.CalibMove.U, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <TextBlock Margin="0,8,0,0" Text="補正值上限 (OffsetLimit)" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Text="X:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.OffsetLimit.X, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Y:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.OffsetLimit.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="U:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.OffsetLimit.U, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <TextBlock Margin="0,8,0,0" Text="補正值修正 (OffsetTrim)" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Text="X:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.OffsetTrim.X, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Y:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.OffsetTrim.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="U:" VerticalAlignment="Center"/>
+                    <TextBox Width="60" Margin="4,0" Text="{Binding Params.OffsetTrim.U, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,6,0,0">
+                    <!-- X 正向 -->
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <TextBlock Text="X Positive:" VerticalAlignment="Center" Width="110"/>
+                        <ComboBox Width="120"
+                      ItemsSource="{Binding AxisDirValues}"
+                      SelectedItem="{Binding Params.XPositive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource AxisGlyph}}"
+                                   FontSize="16" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Y 正向 -->
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <TextBlock Text="Y Positive:" VerticalAlignment="Center" Width="110"/>
+                        <ComboBox Width="120"
+                      ItemsSource="{Binding AxisDirValues}"
+                      SelectedItem="{Binding Params.YPositive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource AxisGlyph}}"
+                                   FontSize="16" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- U 方向 -->
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <TextBlock Text="θ Rotation:" VerticalAlignment="Center" Width="110"/>
+                        <ComboBox Width="120"
+                      ItemsSource="{Binding RotDirValues}"
+                      SelectedItem="{Binding Params.URotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                    <Button Content="Save Params" Command="{Binding CmdSaveParams}" Width="120"/>
+                    <Button Content="Clear" Command="{Binding CmdClear}" Width="80" Margin="8,0,0,0"/>
+                    <Button Content="Seed Demo" Command="{Binding CmdSeedDemo}" Width="100" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <Separator Margin="0,12,0,12"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Calibrate Affine" Command="{Binding CmdCalibAffine}" Width="140"/>
+                    <Button Content="Compute Offset" Command="{Binding CmdComputeOffset}" Width="140" Margin="8,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Robot Points (Real) -->
+                <GroupBox Header="Robot Points (Real)" Grid.Row="0" Grid.Column="0" Margin="0,0,8,8">
+                    <DataGrid ItemsSource="{Binding RobotPoints}"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              CanUserAddRows="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="X" Width="40"
+                                Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="Y" Width="40"
+                                Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="U" Width="40"
+                                Binding="{Binding U, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <!-- Camera Points (Pixel) -->
+                <GroupBox Header="Camera Points (Pixel)" Grid.Row="0" Grid.Column="1" Margin="8,0,8,8">
+                    <DataGrid ItemsSource="{Binding CameraPoints}"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              CanUserAddRows="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="X" Width="40"
+                                Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="Y" Width="40"
+                                Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="U" Width="40"
+                                Binding="{Binding U, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <!-- Camera→Real (Preview) -->
+                <GroupBox Header="Camera→Real (Preview)" Grid.Row="0" Grid.Column="2" Margin="8,0,0,8">
+                    <DataGrid ItemsSource="{Binding CameraToRealPoints}"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="X" Width="40" Binding="{Binding X}"/>
+                            <DataGridTextColumn Header="Y" Width="40" Binding="{Binding Y}"/>
+                            <DataGridTextColumn Header="U" Width="40" Binding="{Binding U}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox Header="Result" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="8">
+                        <TextBlock Text="Offset: " FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding LastOffset.X, StringFormat=' X={0:F3}'}" Margin="8,0"/>
+                        <TextBlock Text="{Binding LastOffset.Y, StringFormat=' Y={0:F3}'}" Margin="8,0"/>
+                        <TextBlock Text="{Binding LastOffset.U, StringFormat=' U={0:F3}'}" Margin="8,0"/>
+                        <Ellipse Width="18" Height="18" Margin="16,0,0,0">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="LightGray"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOk}" Value="True">
+                                            <Setter Property="Fill" Value="LimeGreen"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsOk}" Value="False">
+                                            <Setter Property="Fill" Value="Tomato"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+            <GroupBox Header="Rotation Center" Grid.Row="6" Grid.ColumnSpan="3" Margin="0,8,0,0">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Method:" VerticalAlignment="Center"/>
+                        <!-- 方法選擇：CircleFit / AnglePair -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                            <TextBlock Text="方法：" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox Width="120"
+                      ItemsSource="{Binding RCMethodValues}"
+                      SelectedItem="{Binding Params.RotationMethod,
+                                             Mode=TwoWay,
+                                             UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+
+                        <Button Content="Compute" Margin="16,0,0,0" Command="{Binding CmdComputeCenter}"/>
+                        <Button Content="Save to Scope" Margin="8,0,0,0" Command="{Binding CmdSaveCenter}"/>
+
+                        <TextBlock Text="{Binding CenterX, StringFormat='  Cx={0:F4}'}" Margin="16,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding CenterY, StringFormat='  Cy={0:F4}'}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding CenterRmse, StringFormat='  RMSE={0:F5}'}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+
+                    <!-- CircleFit Input Points -->
+                    <GroupBox Header="CircleFit Input Points" Grid.Row="2" Grid.Column="0" Margin="0,0,8,0">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Top" Content="Use Camera Points" Command="{Binding CmdCopyCenterInput}" Margin="4"/>
+                            <DataGrid ItemsSource="{Binding CenterFitPoints}"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  CanUserAddRows="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="X" Width="60"
+                                    Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Y" Width="60"
+                                    Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="U" Width="60"
+                                    Binding="{Binding U, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </GroupBox>
+
+                    <!-- Pairs + Angle -->
+                    <GroupBox Header="Pairs + Angle (A → B, deg)" Grid.Row="2" Grid.Column="1" Margin="8,0,0,0">
+                        <DataGrid ItemsSource="{Binding CenterPairs}"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              CanUserAddRows="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Ax" Width="60"
+                                Binding="{Binding A.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <DataGridTextColumn Header="Ay" Width="60"
+                                Binding="{Binding A.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <DataGridTextColumn Header="Bx" Width="60"
+                                Binding="{Binding B.X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <DataGridTextColumn Header="By" Width="60"
+                                Binding="{Binding B.Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <DataGridTextColumn Header="Angle(deg)" Width="60"
+                                Binding="{Binding AngleDeg, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+
+                    <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Text="Hint: CircleFit 建議點數≥8且分佈均勻；WithAngles 建議取對稱角度 (-10,-5,+5,+10) 並距中心越遠越好。" Foreground="Gray"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="Alignment.WPF.Controls.AlignmentTestPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            >
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="*"/>
+
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+
+        <DockPanel Grid.Row="0" LastChildFill="False">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <Button Content="Run Affine Test" Width="160" Height="34" Margin="0,0,8,0" Click="OnRunAffine"/>
+                <Button Content="Run Rotation Center" Width="190" Height="34" Margin="0,0,8,0" Click="OnRunCenter"/>
+                <CheckBox x:Name="chkUseAngle" Content="Use Angle Method" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </StackPanel>
+        </DockPanel>
+
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Robot Points" Grid.Column="0">
+                <Grid>
+                    <DataGrid x:Name="dgRobot"
+              Grid.Column="0"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              ItemsSource="{Binding RobotPoints}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="X" Binding="{Binding X}" Width="60" />
+                            <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="60" />
+                            <DataGridTextColumn Header="U" Binding="{Binding U}" Width="60" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="Pixel Points" Grid.Column="2">
+                <Grid>
+                    <DataGrid x:Name="dgPixel"
+              Grid.Column="1"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              ItemsSource="{Binding PixelPoints}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="X" Binding="{Binding X}" Width="60" />
+                            <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="60" />
+                            <DataGridTextColumn Header="U" Binding="{Binding U}" Width="60" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="RotateCenter Data"  Grid.Column="4" >
+                <DataGrid ItemsSource="{Binding RotateCenterPoints}"
+              AutoGenerateColumns="False"
+              CanUserResizeColumns="True"
+              CanUserAddRows="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="X" Width="60"
+                                Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <DataGridTextColumn Header="Y" Width="60"
+                                Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <DataGridTextColumn Header="U" Width="60"
+                                Binding="{Binding U, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+
+        <Grid  Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Raw Import" Grid.Column="0" Margin="0,0,0,0">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Width="100" Height="28" Margin="8"
+            Content="Import" Click="OnImportRaw"/>
+                    <TextBox x:Name="txtRaw"
+             AcceptsReturn="True"
+             VerticalScrollBarVisibility="Auto"
+             HorizontalScrollBarVisibility="Auto"
+             FontFamily="Consolas" FontSize="12"
+                             MinWidth="120"
+             MinHeight="180" TextWrapping="NoWrap"/>
+                </DockPanel>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Result">
+                <Grid>
+                    <TextBox x:Name="txtOutput"
+                             MinWidth="120"
+                 FontFamily="Consolas"
+                 FontSize="14"
+                 AcceptsReturn="True"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"
+                 TextWrapping="NoWrap"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        
+    </Grid>
+</UserControl>
