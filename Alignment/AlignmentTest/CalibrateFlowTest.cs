@@ -7,6 +7,7 @@ using Alignment.Core;
 using Newtonsoft.Json;
 using Alignment.Coordinator.Core.Abstractions;
 using Alignment.Coordinator.Core.Internal;
+using Core.Abstractions;
 
 namespace AlignmentTest
 {
@@ -48,6 +49,16 @@ namespace AlignmentTest
             _index++;
             return Task.FromResult(p);
         }
+
+        public Task<bool> ConnectAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DisconnectAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
@@ -69,26 +80,7 @@ namespace AlignmentTest
 
 
     // 3) 簡單 logger
-    sealed class DebugLogger : ISystemLogger
-    {
-        public void Info(string tag, object data = null)
-        {
-            Debug.WriteLine($"INFO [{tag}]: {JsonConvert.SerializeObject(data)}");
-        }
 
-        public void Warn(string tag, object data = null)
-        {
-            Debug.WriteLine($"WARN [{tag}]: {JsonConvert.SerializeObject(data)}");
-        }
-
-        public void Error(string tag, object data = null)
-        {
-            if (data is Exception ex)
-                Debug.WriteLine($"ERR  [{tag}]: {ex.Message}");
-            else
-                Debug.WriteLine($"ERR  [{tag}]: {JsonConvert.SerializeObject(data)}");
-        }
-    }
 
     // 4) 實際測試流程
     static class CalibrateFlowTest

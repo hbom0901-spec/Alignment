@@ -7,6 +7,7 @@ using Alignment.Core;
 using Alignment.Coordinator.Core.Abstractions;
 using Alignment.Coordinator.Core.State;
 using System.Diagnostics;
+using Core.Abstractions;
 
 namespace Alignment.Coordinator.Core.Internal
 {

@@ -10,23 +10,25 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid Margin="0,0,-302.4,-203">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
                 <controls:AlignmentPanel x:Name="AlignmentPanelControl" Grid.Column="0" Margin="0,4,0,20"/>
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="8"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <controls:AlignmentTestPanel Grid.Row="0" />
-            <Button Grid.Row="2" Content="Run Calibrate Test" Click="BtnRunCalibrateTest_Click" Width="150" Height="40" />
-        </Grid>
-        
-    </Grid>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <controls:AlignmentTestPanel Grid.Row="0" />
+                    <Button Grid.Row="1" Content="Run Calibrate Test" Click="BtnRunCalibrateTest_Click" Width="150" Height="40" Margin="10,8.6,480.8,1" Grid.RowSpan="2" />
+                    <Button x:Name="BtnInit" Content="BtnInit" HorizontalAlignment="Left" Height="100" Margin="166,10.6,0,-57.8" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top" Width="75" Click="BtnInit_Click"/>
+                    <Button x:Name="BtnRun" Content="BtnRun" HorizontalAlignment="Left" Height="100" Margin="246,10.6,0,-53" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top" Width="75" Click="BtnRun_Click"/>
+                </Grid>
+
+            </Grid>
         </Grid>
     </ScrollViewer>
 </Window>

@@ -1,0 +1,13 @@
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\Core.Abstractions.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\Core.Abstractions.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\obj\Debug\Core.Abstractions.csproj.AssemblyReference.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\obj\Debug\Core.Abstractions.csproj.CoreCompileInputs.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\obj\Debug\Core.Abstractions.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\obj\Debug\Core.Abstractions.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\Alignment.Core.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\MathNet.Numerics.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\Newtonsoft.Json.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\Alignment.Core.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\MathNet.Numerics.xml
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\bin\Debug\Newtonsoft.Json.xml
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Core.Abstractions\obj\Debug\Core.Abstractions.csproj.CopyComplete

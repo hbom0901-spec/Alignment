@@ -116,6 +116,18 @@
       <Project>{21350d22-f52f-4f95-93fb-90a330b99122}</Project>
       <Name>Alignment.WPF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj">
+      <Project>{144d8633-d8e7-434a-969f-53f9d82b6046}</Project>
+      <Name>Core.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Device.Simulation\Device.Simulation.csproj">
+      <Project>{84f03d1d-8281-45a1-bf7d-2f4d7bb18d4f}</Project>
+      <Name>Device.Simulation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Flow.Core\Flow.Core.csproj">
+      <Project>{0347404b-e6c5-4fff-ba43-8cc166c9f10b}</Project>
+      <Name>Flow.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

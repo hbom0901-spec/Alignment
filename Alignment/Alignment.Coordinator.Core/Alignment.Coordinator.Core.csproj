@@ -71,6 +71,10 @@
       <Project>{21350d22-f52f-4f95-93fb-90a330b99122}</Project>
       <Name>Alignment.WPF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj">
+      <Project>{144d8633-d8e7-434a-969f-53f9d82b6046}</Project>
+      <Name>Core.Abstractions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

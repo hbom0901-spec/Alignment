@@ -1,15 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Alignment.Core;
+using Core.Abstractions;
 
 namespace Alignment.Coordinator.Core.Abstractions
 {
-    // 若你已有同責接口，改 using 指向你現有命名空間即可
-    public interface IVisionService
-    {
-        // 內部可實作 Grab+Analyze；或你也可分拆 Acquisition/Analysis
-        Task<P3> CaptureAsync(string cam, CancellationToken ct);
-    }
+     //若你已有同責接口，改 using 指向你現有命名空間即可
+    //public interface IVisionService
+    //{
+    //    // 內部可實作 Grab+Analyze；或你也可分拆 Acquisition/Analysis
+    //    Task<P3> CaptureAsync(string cam, CancellationToken ct);
+    //}
 
     public interface IVisionProvider
     {

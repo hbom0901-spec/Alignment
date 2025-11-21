@@ -1,0 +1,15 @@
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Device.Simulation.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Device.Simulation.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Core.Abstractions.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Core.Abstractions.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\obj\Debug\Device.Simulation.csproj.AssemblyReference.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\obj\Debug\Device.Simulation.csproj.CoreCompileInputs.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\obj\Debug\Device.Simulation.csproj.CopyComplete
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\obj\Debug\Device.Simulation.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\obj\Debug\Device.Simulation.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Alignment.Core.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\MathNet.Numerics.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Newtonsoft.Json.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Alignment.Core.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\MathNet.Numerics.xml
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Device.Simulation\bin\Debug\Newtonsoft.Json.xml
