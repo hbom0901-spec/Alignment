@@ -60,6 +60,7 @@
     <Compile Include="Utils\AxisDirToGlyphConverter .cs" />
     <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="ViewModels\AlignmentPanelViewModel.cs" />
+    <Compile Include="ViewModels\MultiCamCalibRow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

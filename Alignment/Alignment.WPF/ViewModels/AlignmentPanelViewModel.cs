@@ -132,31 +132,45 @@ namespace Alignment.WPF.ViewModels
                 CenterY = center.Y;
                 CenterRmse = rmse;
             }
-            else // AnglePair
+            else
             {
-                List<P3> srcPts = new List<P3>();
-                List<P3> realPts = new List<P3>();
+                // 1) 收集 CCD 點：只用 A，代表「該角度下的 CCD 座標」
+                var ccdPts = new List<P3>();
+                var realPts = new List<P3>();
 
                 foreach (CenterPairRow row in CenterPairs)
                 {
-                    // A → srcPts
-                    srcPts.Add(row.A.Clone());
+                    if (row.A == null)
+                        continue; // 保險：如果某列還沒填就略過
 
-                    // B + AngleDeg 打包進 realPts：X/Y= B 座標，U = 角度
+                    // A 點 = 此角度下量測到的 CCD 點
+                    ccdPts.Add(row.A.Clone());
+
+                    // U = 此點的「絕對角度（度）」，直接用 AngleDeg
                     realPts.Add(new P3
                     {
-                        X = row.B.X,
-                        Y = row.B.Y,
-                        U = row.AngleDeg
+                        X = 0,              // 這裡 X/Y 不用，留 0 即可
+                        Y = 0,
+                        U = row.AngleDeg    // 注意：單位 = 度，CalculateByPairs 內部會自己做 deg→rad
                     });
                 }
 
-                (P3 center, double rmse) = _svc.ComputeRotationCenter( method, srcPts, realPts);
+                if (ccdPts.Count < 2)
+                {
+                    // 可以依你習慣丟例外或顯示訊息
+                    throw new InvalidOperationException("AnglePair 需要至少 2 筆點與角度資料");
+                }
+
+                // 呼叫共用演算法：裡面會根據 realPts[i].U 的「絕對角度」做差 angleJ - angleI，
+                // 然後自己做 deg→rad。
+                var (center, rmse) = _svc.ComputeRotationCenter(RCMethod.AnglePair, ccdPts, realPts);
 
                 CenterX = center.X;
                 CenterY = center.Y;
                 CenterRmse = rmse;
             }
+           
+
         }
 
         private void SaveCenter()
@@ -240,10 +254,18 @@ namespace Alignment.WPF.ViewModels
                     CameraToRealPoints.Add(VectorXOps.Transform(vx, p));
             }
             // 4) 旋轉中心相關：CenterFitPoints / CenterPairs / CenterX,Y,Rmse
-            // 4-1) CircleFit 用的輸入, 先簡單複製 CameraPoints
+            // 只使用 CameraPoints[9], [10], [11] 當 CircleFit 輸入
             CenterFitPoints.Clear();
-            foreach (var p in CameraPoints)
-                CenterFitPoints.Add(p.Clone());
+
+            int[] rcIndices = { 9, 10, 11 };   // 0°, +U, -U 對應的 index
+
+            foreach (int idx in rcIndices)
+            {
+                if (idx >= 0 && idx < CameraPoints.Count)
+                {
+                    CenterFitPoints.Add(CameraPoints[idx].Clone());
+                }
+            }
 
             // 4-2) AnglePair 用的 pair 與角度（純 UI 預設用）
             CenterPairs.Clear();
@@ -261,21 +283,21 @@ namespace Alignment.WPF.ViewModels
                 {
                     A = p0.Clone(),
                     B = pPos.Clone(),
-                    AngleDeg = u
+                    AngleDeg = 0
                 });
 
                 CenterPairs.Add(new CenterPairRow
                 {
-                    A = p0.Clone(),
+                    A = pNeg.Clone(),
                     B = pNeg.Clone(),
                     AngleDeg = -u
                 });
 
                 CenterPairs.Add(new CenterPairRow
                 {
-                    A = pNeg.Clone(),
+                    A = pPos.Clone(),
                     B = pPos.Clone(),
-                    AngleDeg = +2.0 * u
+                    AngleDeg =  u
                 });
             }
 
@@ -328,6 +350,73 @@ namespace Alignment.WPF.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged(string n) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
+
+        // 多相機清單（用來建欄位）
+        public string[] MultiCalibCams { get; private set; }
+
+        // 每一 row 表示一個 index（步驟）
+        public ObservableCollection<MultiCamCalibRow> MultiCamCalibRows { get; }
+            = new ObservableCollection<MultiCamCalibRow>();
+
+        /// <summary>
+        /// 初始化多相機校正表格（在開始 Multi Calib 前呼叫一次）
+        /// </summary>
+        public void InitMultiCalib(string[] cams, int expectedSteps)
+        {
+            MultiCalibCams = cams;
+
+            MultiCamCalibRows.Clear();
+
+            // 取得 CalibPosMatrix（相對位置）與 CalibMove（每格步距）
+            var posList = _state.Const.CalibPosMatrix ?? new List<P3>();
+            var step = Params.CalibMove ?? new P3();
+
+            for (int i = 0; i < expectedSteps; i++)
+            {
+                MultiCamCalibRow row = new MultiCamCalibRow
+                {
+                    Index = i
+                };
+
+                // Calibrate 的 Real = CalibPosMatrix[i] * CalibMove
+                if (i < posList.Count)
+                {
+                    var m = posList[i];
+                    row.Real.X = m.X * step.X;
+                    row.Real.Y = m.Y * step.Y;
+                    row.Real.U = m.U * step.U;
+                }
+                // 如果 expectedSteps > CalibPosMatrix.Count，多出來的 row.Real 就維持 (0,0,0)
+
+                MultiCamCalibRows.Add(row);
+            }
+
+            // 通知 View 重新產生欄位（下面會在 View 呼叫 BuildMultiCalibColumns）
+            MultiCalibCamsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        /// <summary>
+        /// 更新某一步的所有相機 CCD 點（Flow 每一步 callback 時呼叫）
+        /// </summary>
+        public void ApplyMultiCalibStep(int stepIndex, Dictionary<string, P3> pixelsByCam)
+        {
+            if (stepIndex < 0 || stepIndex >= MultiCamCalibRows.Count)
+                return;
+
+            var row = MultiCamCalibRows[stepIndex];
+            if (pixelsByCam == null)
+                return;
+
+            foreach (var kv in pixelsByCam)
+            {
+                row.SetCamPoint(kv.Key, kv.Value);
+            }
+        }
+
+        // 提供給 View 重新建欄位用的事件（簡單就好）
+        public event EventHandler MultiCalibCamsChanged;
+
     }
 
     static class ListExt

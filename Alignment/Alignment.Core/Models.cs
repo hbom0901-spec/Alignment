@@ -15,6 +15,7 @@ namespace Alignment.Core
            new P3 { X = 0, Y = 1, U = 0 },
             new P3 { X = 0, Y = 1, U = 0 },
             new P3 { X = -1, Y = 0, U = 0 },
+            new P3 { X = -1, Y = 0, U = 0 },
             new P3 { X = 1, Y = -1, U = 0 },
             new P3 { X = 0, Y = 0, U = -1 },
             new P3 { X = 0, Y = 0, U = 2 },

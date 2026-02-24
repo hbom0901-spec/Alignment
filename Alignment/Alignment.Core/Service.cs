@@ -11,7 +11,7 @@ namespace Alignment.Core
          (P3 center, double rmse) ComputeRotationCenter(
             RCMethod method,
             IReadOnlyList<P3> ccdPts,
-            IReadOnlyList<P3> realPtsOrNull);
+            List<P3> realPtsOrNull);
         void RegisterGolden(string connection, string camera, IReadOnlyList<P3> pixelGolden, P3 realGolden);
         P3 ComputeOffset(string connection, string camera);
         List<P3> GetCalibOffset(string connection);
@@ -185,8 +185,9 @@ namespace Alignment.Core
         public (P3 center, double rmse) ComputeRotationCenter(
             RCMethod method,
             IReadOnlyList<P3> ccdPts,
-            IReadOnlyList<P3> realPts)
+            List<P3> realPts)
         {
+
             return RotationCenter.CalculateRotateCenter(ccdPts, realPts, method);
         }
 

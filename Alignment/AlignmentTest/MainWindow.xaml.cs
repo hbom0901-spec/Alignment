@@ -159,40 +159,59 @@ namespace AlignmentTest
 
         private async void BtnRun_Click(object sender, RoutedEventArgs e)
         {
+
+            var cams = new[] { "CCD1" };  // 你真實的相機名稱
+            string jobId = "JOB_TEST_001";
             BtnRun.IsEnabled = false;
 
             // 執行前先把舊資料清空，這樣畫面上才會從零開始長出來
             _state.RobotPoints.Clear();
             _state.CameraPoints.Clear();
+            _vm.InitMultiCalib(cams, expectedSteps: 12);
+
+            int step = 0;
             _vm.ReloadFromState();
 
             try
             {
                 await _flowController.InitializeSystemAsync();
+                await _flowController.RunCalibrationMultiAsync(
+           conn: _vm.Connection,   // 或你實際的 conn 名稱
+           cams: cams,
+           jobId: jobId,
+           onStepFinished: (pixelsByCam, real) =>
+           {
+                // 回 UI thread
+                Application.Current.Dispatcher.Invoke(() =>
+               {
+                   _vm.ApplyMultiCalibStep(step, pixelsByCam);
+                   step++;
+               });
+           });
 
-                // 這裡的 lambda 變成了接收兩個參數 (rob, ccd)
-                await _flowController.RunCalibrationVerifyAsync(
-                    _vm.Connection,
-                    _vm.Camera,
-                    "JOB_TEST_001",
-                    (rob, ccd) =>
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                    // 1. 把 Flow 吐出來的資料塞進 State
-                    _state.RobotPoints.Add(rob);
+                //// 這裡的 lambda 變成了接收兩個參數 (rob, ccd)
+                //await _flowController.RunCalibrationVerifyAsync(
+                //    _vm.Connection,
+                //    _vm.Camera,
+                //    "JOB_TEST_001",
+                //    (rob, ccd) =>
+                //    {
+                //        Application.Current.Dispatcher.Invoke(() =>
+                //        {
+                //    // 1. 把 Flow 吐出來的資料塞進 State
+                //    _state.RobotPoints.Add(rob);
 
-                            if (!_state.CameraPoints.ContainsKey(_vm.Camera))
-                            {
-                                _state.CameraPoints[_vm.Camera] = new List<P3>();
-                            }
-                            _state.CameraPoints[_vm.Camera].Add(ccd);
+                //            if (!_state.CameraPoints.ContainsKey(_vm.Camera))
+                //            {
+                //                _state.CameraPoints[_vm.Camera] = new List<P3>();
+                //            }
+                //            _state.CameraPoints[_vm.Camera].Add(ccd);
 
-                    // 2. 現在 State 有資料了，叫 VM 重新讀取，圖表就會動了！
-                    _vm.ReloadFromState();
-                        });
-                    }
-                );
+                //    // 2. 現在 State 有資料了，叫 VM 重新讀取，圖表就會動了！
+                //    _vm.ReloadFromState();
+                //        });
+                //    }
+                //);
 
                 MessageBox.Show("流程執行結束");
             }

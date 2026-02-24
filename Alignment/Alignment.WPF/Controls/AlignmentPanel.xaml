@@ -125,55 +125,13 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Robot Points (Real) -->
-                <GroupBox Header="Robot Points (Real)" Grid.Row="0" Grid.Column="0" Margin="0,0,8,8">
-                    <DataGrid ItemsSource="{Binding RobotPoints}"
-              AutoGenerateColumns="False"
-              CanUserResizeColumns="True"
-              CanUserAddRows="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="X" Width="40"
-                                Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="Y" Width="40"
-                                Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="U" Width="40"
-                                Binding="{Binding U, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
-
-                <!-- Camera Points (Pixel) -->
-                <GroupBox Header="Camera Points (Pixel)" Grid.Row="0" Grid.Column="1" Margin="8,0,8,8">
-                    <DataGrid ItemsSource="{Binding CameraPoints}"
-              AutoGenerateColumns="False"
-              CanUserResizeColumns="True"
-              CanUserAddRows="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="X" Width="40"
-                                Binding="{Binding X, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="Y" Width="40"
-                                Binding="{Binding Y, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="U" Width="40"
-                                Binding="{Binding U, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
-
-                <!-- Camera→Real (Preview) -->
-                <GroupBox Header="Camera→Real (Preview)" Grid.Row="0" Grid.Column="2" Margin="8,0,0,8">
-                    <DataGrid ItemsSource="{Binding CameraToRealPoints}"
-              AutoGenerateColumns="False"
-              CanUserResizeColumns="True"
-              IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="X" Width="40" Binding="{Binding X}"/>
-                            <DataGridTextColumn Header="Y" Width="40" Binding="{Binding Y}"/>
-                            <DataGridTextColumn Header="U" Width="40" Binding="{Binding U}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
-
-                <GroupBox Header="Result" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0">
+                <DataGrid x:Name="MultiCalibGrid"
+          Grid.Row="0"     Grid.ColumnSpan="3" 
+                    ItemsSource="{Binding MultiCamCalibRows}"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          Margin="4" />
+                    <GroupBox Header="Result" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0">
                     <StackPanel Orientation="Horizontal" Margin="8">
                         <TextBlock Text="Offset: " FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding LastOffset.X, StringFormat=' X={0:F3}'}" Margin="8,0"/>

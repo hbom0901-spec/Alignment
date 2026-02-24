@@ -9,3 +9,14 @@ C:\Users\USER\source\repos\Alignment\Alignment.Core\obj\Debug\Alignment.Core.csp
 C:\Users\USER\source\repos\Alignment\Alignment.Core\obj\Debug\Alignment.Core.dll
 C:\Users\USER\source\repos\Alignment\Alignment.Core\obj\Debug\Alignment.Core.pdb
 C:\Users\USER\source\repos\Alignment\Alignment.Core\obj\Debug\Alignment.Core.csproj.AssemblyReference.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\bin\Debug\Alignment.Core.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\bin\Debug\Alignment.Core.pdb
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\bin\Debug\MathNet.Numerics.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\bin\Debug\Newtonsoft.Json.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\bin\Debug\MathNet.Numerics.xml
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\bin\Debug\Newtonsoft.Json.xml
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\obj\Debug\Alignment.Core.csproj.AssemblyReference.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\obj\Debug\Alignment.Core.csproj.CoreCompileInputs.cache
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\obj\Debug\Alignment.Core.csproj.CopyComplete
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\obj\Debug\Alignment.Core.dll
+C:\Users\USER\Documents\GitHub\Alignment\Alignment\Alignment.Core\obj\Debug\Alignment.Core.pdb

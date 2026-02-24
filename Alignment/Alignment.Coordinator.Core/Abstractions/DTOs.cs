@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Alignment.Core;
 
 namespace Alignment.Coordinator.Core.Abstractions
@@ -11,6 +12,16 @@ namespace Alignment.Coordinator.Core.Abstractions
         public string JobId;    // 任務識別（可由 PLC 或 Guid）
         public double RobotX, RobotY, RobotU; // 當次 robot 點（快照）
         public IList<string> Cams; // 多相機名單（Register/Align 用）
+        public IEnumerable<string> GetEffectiveCams()
+        {
+            if (Cams != null && Cams.Count > 0)
+                return Cams;
+
+            if (!string.IsNullOrEmpty(Cam))
+                return new[] { Cam };
+
+            return Array.Empty<string>();
+        }
     }
 
     public struct CommandResult
@@ -30,6 +41,9 @@ namespace Alignment.Coordinator.Core.Abstractions
 
         // 校正中回覆給外部的「下一步移動量」（CalibMoveMatrix * CalibMove 的其中一段）
         public P3 NextRobot;
+
+        // 新增：多相機時，每顆相機的 CCD 位置
+        public Dictionary<string, P3> PixelsByCam;
     }
 
     public struct CalibResult
@@ -58,4 +72,5 @@ namespace Alignment.Coordinator.Core.Abstractions
         ProgressOnly,
         AllCalibration
     }
+
 }

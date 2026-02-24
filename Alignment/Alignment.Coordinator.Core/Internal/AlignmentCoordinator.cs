@@ -39,18 +39,52 @@ namespace Alignment.Coordinator.Core.Internal
         public async Task<CommandResult> HandleAsync(CommandPacket cmd, CancellationToken ct = default)
         {
             if (cmd == null) throw new ArgumentNullException("cmd");
-            _state.LastRobotPointByConn[cmd.Conn] = new P3 { X = cmd.RobotX, Y = cmd.RobotY, U = cmd.RobotU };
+
+            _state.LastRobotPointByConn[cmd.Conn] = new P3
+            {
+                X = cmd.RobotX,
+                Y = cmd.RobotY,
+                U = cmd.RobotU
+            };
+
+            // 統一取得這次要處理的相機清單
+            var effectiveCams = (cmd.GetEffectiveCams() ?? Array.Empty<string>()).ToArray();
 
             switch (cmd.Command)
             {
-                case AlignCommand.Calibrate: return await CalibrateOnceAsync(cmd.Conn, cmd.Cam, cmd.JobId, ct);
-                case AlignCommand.Register: return await RegisterAsync(cmd.Conn, cmd.Cams ?? new[] { cmd.Cam }, cmd.JobId, ct);
-                case AlignCommand.Align: return await AlignAsync(cmd.Conn, cmd.Cams ?? new[] { cmd.Cam }, cmd.JobId, ct);
-                case AlignCommand.Reset: return Reset(cmd.Conn, cmd.Cam, ResetScope.ProgressOnly, cmd.JobId);
+                case AlignCommand.Calibrate:
+                    if (effectiveCams.Length <= 1)
+                    {
+                        // 單相機模式（維持原本行為）
+                        string cam = effectiveCams.Length == 1 ? effectiveCams[0] : cmd.Cam;
+                        return await CalibrateOnceAsync(cmd.Conn, cam, cmd.JobId, ct);
+                    }
+                    else
+                    {
+                        // 多相機模式（這一步先走到 Multi 版本）
+                        return await CalibrateOnceMultiAsync(cmd.Conn, effectiveCams, cmd.JobId, ct);
+                    }
+
+                case AlignCommand.Register:
+                    return await RegisterAsync(cmd.Conn,
+                                               cmd.Cams ?? new[] { cmd.Cam },
+                                               cmd.JobId,
+                                               ct);
+
+                case AlignCommand.Align:
+                    return await AlignAsync(cmd.Conn,
+                                            cmd.Cams ?? new[] { cmd.Cam },
+                                            cmd.JobId,
+                                            ct);
+
+                case AlignCommand.Reset:
+                    return Reset(cmd.Conn, cmd.Cam, ResetScope.ProgressOnly, cmd.JobId);
+
                 default:
                     return Fail(cmd.JobId, "Unknown command");
             }
         }
+
 
         // --- Calibrate: 單次累積一對 ---
         private async Task<CommandResult> CalibrateOnceAsync(string conn, string cam, string jobId, CancellationToken ct)
@@ -170,7 +204,198 @@ namespace Alignment.Coordinator.Core.Internal
                 Rmse = affineRmse,
                 Completed = plan.CompletedCount,
                 Required = plan.RequiredCount,
+                Pixel = ccd,
                 NextRobot = lastStep
+            };
+        }
+
+        // --- Calibrate: 多相機，一次步驟同步處理多顆 CCD ---
+        private async Task<CommandResult> CalibrateOnceMultiAsync(string conn, IList<string> cams, string jobId, CancellationToken ct)
+        {
+            if (_svc == null)
+                throw new InvalidOperationException("IAlignmentService is not set for AlignmentCoordinator.");
+
+            if (cams == null || cams.Count == 0)
+                return Fail(jobId, "No cams");
+
+            // 確認每一顆相機都有 Vision
+            foreach (var cam in cams)
+            {
+                var v = _visionProvider?.Get(cam);
+                if (v == null)
+                    return Fail(jobId, $"Vision not set for cam '{cam}'");
+            }
+
+            // 1) 取得當前 Robot 實際座標（外部傳進來的 snapshot）
+            if (!_state.LastRobotPointByConn.TryGetValue(conn, out P3 realActual))
+            {
+                realActual = new P3();
+            }
+
+            // 2) 以第一顆相機當作 primary，負責驅動 PosList / Steps / RequiredCount
+            string primaryCam = cams[0];
+            (string conn, string cam) primaryKey = (conn, primaryCam);
+
+            if (!_state.CalibPlans.TryGetValue(primaryKey, out CalibPlan primaryPlan))
+            {
+                primaryPlan = new CalibPlan();
+                _state.CalibPlans[primaryKey] = primaryPlan;
+            }
+
+            if (!primaryPlan.BaseRobotSet)
+            {
+                primaryPlan.BaseRobot = realActual;
+                primaryPlan.BaseRobotSet = true;
+
+                if (primaryPlan.PosList == null || primaryPlan.PosList.Count == 0)
+                    primaryPlan.PosList = BuildCalibPosList();
+
+                if (primaryPlan.Steps == null || primaryPlan.Steps.Count == 0)
+                    primaryPlan.Steps = BuildCalibSteps();
+
+                if (primaryPlan.PosList != null && primaryPlan.PosList.Count > 0)
+                {
+                    // 目前流程只用前 12 點做校正（9 仿射 + 3 旋心）
+                    primaryPlan.RequiredCount = Math.Min(primaryPlan.PosList.Count, 12);
+                }
+            }
+
+            int idx = primaryPlan.CompletedCount;
+            List<P3> posList = primaryPlan.PosList ?? new List<P3>();
+            List<P3> steps = primaryPlan.Steps ?? new List<P3>();
+
+            if (idx >= posList.Count)
+            {
+                return Fail(jobId, "Calibration index out of range");
+            }
+
+            P3 realForThisStep = posList[idx];
+
+            // 3) 這一步每顆 cam 的 CCD 都放到這裡
+            var pixelsByCam = new Dictionary<string, P3>();
+
+            // 也保留一個代表用的 CCD（例如 primaryCam）給舊 UI 使用
+            P3 firstCcd = default;
+            bool firstCcdSet = false;
+
+            foreach (var cam in cams)
+            {
+                (string conn, string cam) key = (conn, cam);
+
+                if (!_state.CalibPlans.TryGetValue(key, out CalibPlan plan))
+                {
+                    plan = new CalibPlan();
+                    _state.CalibPlans[key] = plan;
+                }
+
+                if (!plan.BaseRobotSet)
+                {
+                    plan.BaseRobot = primaryPlan.BaseRobot;
+                    plan.BaseRobotSet = true;
+                    plan.PosList = primaryPlan.PosList;
+                    plan.Steps = primaryPlan.Steps;
+                    plan.RequiredCount = primaryPlan.RequiredCount;
+                }
+
+                var vision = _visionProvider?.Get(cam);
+                if (vision == null)
+                    return Fail(jobId, $"Vision not set for cam '{cam}'");
+
+                // 拍照，取得 CCD 點
+                P3 ccd = await vision.CaptureAsync(cam, ct).ConfigureAwait(false);
+
+                if (!firstCcdSet)
+                {
+                    firstCcd = ccd;
+                    firstCcdSet = true;
+                }
+
+                // 累積 pair
+                plan.Pairs.Add((ccd, realForThisStep));
+
+                // 對應這顆相機的 CCD
+                pixelsByCam[cam] = ccd;
+
+                _log?.Info("Calibrate.Pair", (conn, cam, jobId, Index: idx, Real: realForThisStep));
+            }
+
+            // 5) 判斷是否收集完
+            int required = primaryPlan.RequiredCount == 0 ? 0 : primaryPlan.RequiredCount;
+            int completed = primaryPlan.CompletedCount;
+
+            if (completed < Math.Max(3, required == 0 ? 3 : required))
+            {
+                int nextIndex = Math.Max(0, completed - 1);
+                P3 nextRobot = (steps.Count > nextIndex) ? steps[nextIndex] : new P3();
+
+                return new CommandResult
+                {
+                    Success = true,
+                    Status = 1,
+                    Message = "Calibrating",
+                    JobId = jobId,
+                    Completed = completed,
+                    Required = required,
+                    Pixel = firstCcd,          // 主鏡頭用
+                    Real = realForThisStep,   // 這一步的 Robot Real
+                    PixelsByCam = pixelsByCam,     // 所有相機的 CCD 點
+                    NextRobot = nextRobot
+                };
+            }
+
+            // 6) 收集完 → 對每一顆相機分別做 CalibrateFromPairs
+            const int affineCount = 9;
+            const int rotationCount = 3;
+
+            double worstAffineRmse = 0.0;
+            P3 lastStep = (steps.Count > 0) ? steps[steps.Count - 1] : new P3();
+
+            foreach (var cam in cams)
+            {
+                (string conn, string cam) key = (conn, cam);
+
+                if (!_state.CalibPlans.TryGetValue(key, out CalibPlan plan))
+                    continue;
+
+                CalibInfo info = _svc.CalibrateFromPairs(
+                    conn,
+                    cam,
+                    plan.Pairs,
+                    affineCount,
+                    rotationCount,
+                    out double affineRmse,
+                    out P3 rotationCenter,
+                    out double rotationRmse);
+
+                plan.IsDone = true;
+
+                if (affineRmse > worstAffineRmse)
+                    worstAffineRmse = affineRmse;
+
+                _log?.Info("Calibrate.Done", new
+                {
+                    Conn = conn,
+                    Cam = cam,
+                    JobId = jobId,
+                    Rmse = affineRmse,
+                    Rc = rotationCenter,
+                    RcRmse = rotationRmse,
+                    Pairs = plan.CompletedCount,
+                    CalibInfo = info
+                });
+            }
+
+            return new CommandResult
+            {
+                Success = true,
+                Status = 2,
+                Message = "Calibration completed (multi-cam)",
+                JobId = jobId,
+                Rmse = worstAffineRmse,
+                Completed = completed,
+                Required = required,
+                NextRobot = lastStep,
+                PixelsByCam = null // 完成時 UI 不再需要 per-step CCD
             };
         }
 
